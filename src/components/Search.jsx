@@ -15,14 +15,19 @@ const SearchInput = ({ handleSearch }) => {
     // console.log(query);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    handleSearch(searchText)
+  }
+
   const selectCoin = (coins) => {
     setCoinSearchData(coins)
     setSearchText(" ")
-    setSearchData([])
+    setSearchData()
   }
   return (
     <>
-      <form className="w-96 relative flex items-center ml-7 font-nunito" onSubmit={(e) => e.preventDefault()}>
+      <form className="w-96 relative flex items-center ml-7 font-nunito" onSubmit={handleSubmit}>
         <input
           onChange={handleInput}
           value={searchText}
@@ -53,7 +58,10 @@ const SearchInput = ({ handleSearch }) => {
               </li>;
             })
           ) : (
-            <h2>Please wait ...</h2>
+            <div className="w-full h-full flex justify-center items-center">
+              <div className="w-8 h-8 border-4 border-cyan rounded-full border-b-gray-200 animate-spin" role="status"  />
+              <span className="ml-2">Searching ...  </span>
+            </div>
           )}
         </ul>
       ) : null}

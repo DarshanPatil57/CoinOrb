@@ -12,6 +12,7 @@ export const CryptoContext = createContext({
 export const CryptoProvider = ({children}) =>{
     const [cryptoData,setCryptoData] = useState([])
     const [searchData,setSearchData] = useState([])
+    const [coinData,setCoinData] = useState()
     const [coinsearchData,setCoinSearchData] = useState("")
 
     const [currency,setCurrency] = useState("usd")
@@ -42,6 +43,19 @@ export const CryptoProvider = ({children}) =>{
         }
     }
 
+    const getCoinData = async (coinId) => {
+
+        try {
+            const data = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=true&sparkline=false`)
+            .then(res => res.json())
+            .then(json => json)
+            // console.log("coindata",data);
+            setCoinData(data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const getSearchResult = async (query) => {
         try {
             const data = await fetch(`https://api.coingecko.com/api/v3/search?query=${query}`)
@@ -64,7 +78,7 @@ export const CryptoProvider = ({children}) =>{
     }, [coinsearchData,currency,sortBy,page])
     
     return (
-        <CryptoContext.Provider value={{cryptoData,searchData,getSearchResult,coinsearchData,setCoinSearchData,setSearchData,currency,setCurrency,sortBy,setSortBy,page,setPage,totalPage,resetButton}}>
+        <CryptoContext.Provider value={{cryptoData,searchData,getSearchResult,coinsearchData,setCoinSearchData,setSearchData,currency,setCurrency,sortBy,setSortBy,page,setPage,totalPage,resetButton,getCoinData,coinData}}>
             {children}
         </CryptoContext.Provider>
     )

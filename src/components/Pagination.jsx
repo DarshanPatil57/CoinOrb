@@ -37,6 +37,7 @@ const Pagination = () => {
         }
     }
 
+    // TODO : RELATED TO SEARCH FILTER AND PAGINATION .
 
   return (
     <div className='flex items-center'>

@@ -261,7 +261,16 @@ const CryptoDetails = () => {
 
             <div className="flex flex-col w-[55%] h-full pl-3">
              <Chart id={coinData.id}/> 
+             <div className="flex flex-col mt-4">
+              <h3 className="text-white py-1"><span className="text-gray-100 capitalize mr-1">Market Cap Rank :</span> {coinData.market_cap_rank}</h3>
+              <h3 className="text-white py-1"><span className="text-gray-100 capitalize mr-1">CoinGeko Rank :</span> {coinData.coingeko_rank}</h3>
+              <h3 className="text-white py-1"><span className="text-gray-100 capitalize mr-1">CoinGeko Score :</span> {coinData.coingeko_score}</h3>
+             </div>
             </div>
+
+            <div className="">
+            </div>
+
           </div>
         ) : null}
       </div>

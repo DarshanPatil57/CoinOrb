@@ -1,5 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
-
+import React, { useLayoutEffect, useState, useContext } from "react";
 import {
   LineChart,
   Line,
@@ -10,10 +9,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useContext } from "react";
-import { CryptoContext } from "./../context/CryptoContext";
+import { CryptoContext } from "../context/CryptoContext";
 
-function CustomTooltip({ payload, label, active, currency = "usd" }) {
+const CustomTooltip = ({ payload, label, active, currency = "usd" }) => {
   if (active && payload && payload.length > 0) {
     return (
       <div className="custom-tooltip">
@@ -28,14 +26,13 @@ function CustomTooltip({ payload, label, active, currency = "usd" }) {
       </div>
     );
   }
-
   return null;
-}
+};
 
 const ChartComponent = ({ data, currency, type }) => {
   return (
-    <ResponsiveContainer height={"90%"}>
-      <LineChart width={400} height={400} data={data}>
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={data}>
         <Line
           type="monotone"
           dataKey={type}
@@ -57,49 +54,59 @@ const ChartComponent = ({ data, currency, type }) => {
   );
 };
 
-const Chart = ({ id }) => {
-  const [chartData, setChartData] = useState();
-  let { currency } = useContext(CryptoContext);
+const Chart = ({ coinData }) => {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { currency } = useContext(CryptoContext);
   const [type, setType] = useState("prices");
   const [days, setDays] = useState(7);
 
   useLayoutEffect(() => {
-    const getChartData = async (id) => {
+    if (!coinData || !coinData.id) {
+      console.error("Invalid coin data passed to Chart component");
+      return;
+    }
+
+    const fetchChartData = async () => {
+      setLoading(true);
       try {
-        const data = await fetch(
-          `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}&interval=daily`
-        )
-          .then((res) => res.json())
-          .then((json) => json);
+        const response = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${coinData.id}/market_chart?vs_currency=${currency}&days=${days}&interval=daily`
+        );
+        const data = await response.json();
 
-        // console.log("chart-data", data);
+        if (!data || !data[type]) {
+          console.error("Invalid chart data received:", data);
+          return;
+        }
 
-        let convertedData = data[type].map((item) => {
-          return {
-            date: new Date(item[0]).toLocaleDateString(),
-            [type]: item[1],
-          };
-        });
+        const convertedData = data[type].map((item) => ({
+          date: new Date(item[0]).toLocaleDateString(),
+          [type]: item[1],
+        }));
 
-        // console.log(convertedData);
         setChartData(convertedData);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching chart data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    getChartData(id);
-  }, [id, type, days]);
+    fetchChartData();
+  }, [coinData, type, days, currency]);
 
   return (
-    <div className="w-full h-[60%]">
-      <ChartComponent data={chartData} currency={currency} type={type} />
-      <div className="flex">
+    <div className="w-full h-[72%] sm:h-[70%]">
+      {loading ? (
+        <p>Loading chart...</p>
+      ) : (
+        <ChartComponent data={chartData} currency={currency} type={type} />
+      )}
+      <div className="flex flex-wrap gap-2 mt-4 sm:gap-4 sm:flex-row">
         <button
           className={`text-sm py-0.5 px-1.5 ml-2 bg-opacity-25 rounded capitalize ${
-            type === "prices"
-              ? "bg-cyan text-cyan"
-              : "bg-gray-200 text-gray-100"
+            type === "prices" ? "bg-cyan text-cyan" : "bg-gray-200 text-gray-100"
           }`}
           onClick={() => setType("prices")}
         >
@@ -113,7 +120,7 @@ const Chart = ({ id }) => {
           }`}
           onClick={() => setType("market_caps")}
         >
-          market caps
+          Market Caps
         </button>
         <button
           className={`text-sm py-0.5 px-1.5 ml-2 bg-opacity-25 rounded capitalize ${
@@ -123,9 +130,8 @@ const Chart = ({ id }) => {
           }`}
           onClick={() => setType("total_volumes")}
         >
-          total volumes
+          Total Volumes
         </button>
-
         <button
           className={`text-sm py-0.5 px-1.5 ml-2 bg-opacity-25 rounded capitalize ${
             days === 7 ? "bg-cyan text-cyan" : "bg-gray-200 text-gray-100"

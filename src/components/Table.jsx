@@ -49,94 +49,123 @@ const SaveBtn = ({ data }) => {
     </button>
   );
 };
+
 const Table = () => {
   let { cryptoData, currency } = useContext(CryptoContext);
   return (
     <>
-    <div className="flex flex-col mt-9 border border-gray-100 rounded">
-      {cryptoData ? (
-        <table className="w-full table-auto">
-          <thead className=" capitalize  text-base text-gray-100 font-medium border-b border-gray-100">
-            <tr>
-              <th className="py-2">Asset</th>
-              <th className="py-2">Name</th>
-              <th className="py-2">Price</th>
-              <th className="py-2">Total Volume</th>
-              <th className="py-2">Market Cap Change</th>
-              <th className="py-2">1H</th>
-              <th className="py-2">24H</th>
-              <th className="py-2">7D</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cryptoData.map((data) => {
-              return (
-                <tr
-                  key={data.id}
-                  className="text-center text-base border-b border-gray-100 hover:bg-gray-200 last:border-b-0"
-                >
-                  <td className="py-4 flex items-center uppercase">
-                    <SaveBtn data={data}/>
-                    <img
-                      className="w-[1.2rem] h-[1.2rem] mx-1.5"
-                      src={data.image}
-                      alt={data.name}
-                    />
-                    <span>
-                    <Link to={`/${data.id}`} className=" cursor-pointer">
-                    {data.symbol}
-                    </Link>
-                    </span>
-                  </td>
-                  <td className="py-4">
-                    <Link to={`/${data.id}`} className=" cursor-pointer">
-                    {data.name}
-                    </Link>
-                  </td>
-                  <td className="py-4">
-                    {
-                        new Intl.NumberFormat("en-IN",{
-                            style:"currency",
-                            currency:  currency,
-                        }).format(data.current_price)
-                    }
-                  </td>
-                  <td className="py-4">{data.total_volume}</td>
-                  <td className="py-4">
-                    {data.market_cap_change_percentage_24h} %
-                  </td>
-                  <td className={
-                    data.price_change_percentage_1h_in_currency > 0 ? 'text-green py-4' : 'text-red py-4'
-                  }>
-                    {Number(data.price_change_percentage_1h_in_currency).toFixed(2)}
-                  </td>
-                  <td className={
-                    data.price_change_percentage_24h_in_currency > 0 ? 'text-green py-4' : 'text-red py-4'
-                  }>
-                    {Number(data.price_change_percentage_24h_in_currency).toFixed(2)}
-                  </td>
-                  <td className={
-                    data.price_change_percentage_7d_in_currency > 0 ? 'text-green py-4' : 'text-red py-4'
-                  }>
-                    {Number(data.price_change_percentage_7d_in_currency).toFixed(2)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      ) : 
-      <div className="w-full min-h-[60vh] h-full flex justify-center items-center">
-      <div className="w-8 h-8 border-4 border-cyan rounded-full border-b-gray-200 animate-spin" role="status"  />
-      <span className="ml-2">Fetching ...  </span>
-    </div>
-      }
-    </div>
-    <div className="flex items-center justify-between mt-4 capitalize h-[2rem">
-      <span>Data from <a className="text-cyan" href="https://www.coingecko.com/" rel="noreferrer" target={"_blank"}>CoinGecko</a></span>
-      <Pagination/>
-
-    </div>
+      <div className="flex flex-col mt-9 border border-gray-100 rounded overflow-auto md:overflow-visible">
+        {cryptoData ? (
+          <table className="w-full table-auto min-w-[600px] md:min-w-full">
+            <thead className="capitalize text-base text-gray-100 font-medium border-b border-gray-100">
+              <tr>
+                <th className="py-2">Asset</th>
+                <th className="py-2">Name</th>
+                <th className="py-2">Price</th>
+                <th className="py-2">Total Volume</th>
+                <th className="py-2">Market Cap Change</th>
+                <th className="py-2 lg:table-cell hidden">1H</th>
+                <th className="py-2 lg:table-cell hidden">24H</th>
+                <th className="py-2 lg:table-cell hidden">7D</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cryptoData.map((data) => {
+                return (
+                  <tr
+                    key={data.id}
+                    className="text-center text-base border-b border-gray-100 hover:bg-gray-200 last:border-b-0"
+                  >
+                    <td className="py-4 flex items-center uppercase">
+                      <SaveBtn data={data} />
+                      <img
+                        className="w-[1.2rem] h-[1.2rem] mx-1.5"
+                        src={data.image}
+                        alt={data.name}
+                      />
+                      <span>
+                        <Link to={`/${data.id}`} className="cursor-pointer">
+                          {data.symbol}
+                        </Link>
+                      </span>
+                    </td>
+                    <td className="py-4">
+                      <Link to={`/${data.id}`} className="cursor-pointer">
+                        {data.name}
+                      </Link>
+                    </td>
+                    <td className="py-4">
+                      {new Intl.NumberFormat("en-IN", {
+                        style: "currency",
+                        currency: currency,
+                      }).format(data.current_price)}
+                    </td>
+                    <td className="py-4">{data.total_volume}</td>
+                    <td className="py-4">
+                      {data.market_cap_change_percentage_24h} %
+                    </td>
+                    <td
+                      className={
+                        data.price_change_percentage_1h_in_currency > 0
+                          ? "text-green py-4 lg:table-cell hidden"
+                          : "text-red py-4 lg:table-cell hidden"
+                      }
+                    >
+                      {Number(data.price_change_percentage_1h_in_currency).toFixed(
+                        2
+                      )}
+                    </td>
+                    <td
+                      className={
+                        data.price_change_percentage_24h_in_currency > 0
+                          ? "text-green py-4 lg:table-cell hidden"
+                          : "text-red py-4 lg:table-cell hidden"
+                      }
+                    >
+                      {Number(data.price_change_percentage_24h_in_currency).toFixed(
+                        2
+                      )}
+                    </td>
+                    <td
+                      className={
+                        data.price_change_percentage_7d_in_currency > 0
+                          ? "text-green py-4 lg:table-cell hidden"
+                          : "text-red py-4 lg:table-cell hidden"
+                      }
+                    >
+                      {Number(data.price_change_percentage_7d_in_currency).toFixed(
+                        2
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div className="w-full min-h-[60vh] h-full flex justify-center items-center">
+            <div
+              className="w-8 h-8 border-4 border-cyan rounded-full border-b-gray-200 animate-spin"
+              role="status"
+            />
+            <span className="ml-2">Fetching ...</span>
+          </div>
+        )}
+      </div>
+      <div className="flex items-center justify-between mt-4 capitalize h-[2rem] text-sm md:text-base">
+        <span>
+          Data from{" "}
+          <a
+            className="text-cyan"
+            href="https://www.coingecko.com/"
+            rel="noreferrer"
+            target={"_blank"}
+          >
+            CoinGecko
+          </a>
+        </span>
+        <Pagination />
+      </div>
     </>
   );
 };

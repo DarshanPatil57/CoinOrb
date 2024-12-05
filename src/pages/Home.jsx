@@ -11,12 +11,13 @@ const Home = () => {
     <CryptoProvider>
       <TrendingProvider>
         <StorageProvider>
-      <main className=" w-full h-full flex flex-col content-center items-center relative text-white font-nunito">
-        <div className="w-screen h-screen bg-gray-300 fixed -z-10"></div>
-        <Logo />
-        <Navigation />
-        <Outlet />
-      </main>
+          <main className="w-full h-full flex flex-col content-center items-center relative text-white font-nunito">
+            {/* Background */}
+            <div className="w-screen h-screen bg-gray-300 fixed -z-10"></div>
+            <Logo />
+            <Navigation />
+            <Outlet />
+          </main>
         </StorageProvider>
       </TrendingProvider>
     </CryptoProvider>
@@ -24,3 +25,4 @@ const Home = () => {
 };
 
 export default Home;
+  
